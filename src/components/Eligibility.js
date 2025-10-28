@@ -6,7 +6,7 @@ export default function EligibilitySection() {
     "Applicant should be a domicile of Haryana having a valid PPP ID.",
     "Applicant's age should be between 18 to 35 years.",
     "Applicants should not be in any kind of employment e.g., public/government/private sector/quasi-government or self-employment at the time of applying for the scheme.",
-    "Applicants, who are graduate or post-graduate (B. Tech./ BCA/ BSc. IT)/ (M.E./M. Tech./ MCA/MSc IT/MBA IT) from recognized institutes/colleges/universities.",
+    "Applicants, who are graduate or post-graduate (B. Tech/ BCA/ BSc-IT)/ (M.E./M. Tech/ MCA/MSc-IT/MBA-IT) from recognized institutes/colleges/universities.",
     "The candidates will be eligible for unemployment allowance only if the annual family income of the candidate does not exceed rupees three lakhs (Rs.3 lakhs) from all sources.",
     "The unemployment allowance will only be commenced post 01 month from the Date of issuance of the passing certificate for the assessment test of the course completed."
   ];
