@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogTitle,
@@ -13,12 +12,48 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 
+const HARYANA_DISTRICTS = [
+  "Ambala",
+  "Bhiwani",
+  "Charkhi Dadri",
+  "Faridabad",
+  "Fatehabad",
+  "Gurugram",
+  "Hisar",
+  "Jhajjar",
+  "Jind",
+  "Kaithal",
+  "Karnal",
+  "Kurukshetra",
+  "Mahendragarh",
+  "Nuh",
+  "Palwal",
+  "Panchkula",
+  "Panipat",
+  "Rewari",
+  "Rohtak",
+  "Sirsa",
+  "Sonipat",
+  "Yamunanagar",
+];
+
+const QUALIFICATIONS = [
+  "BTECH",
+  "MTECH",
+  "MCA",
+  "BCA",
+  "MSC-IT",
+  "MBA-IT",
+  "BSC-IT",
+];
+
 export default function JoinNowDialog({ open, onClose }) {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
     district: "",
+    qualification: "",
     course: "",
   });
 
@@ -27,6 +62,7 @@ export default function JoinNowDialog({ open, onClose }) {
     phone: false,
     email: false,
     district: false,
+    qualification: false,
     course: false,
   });
 
@@ -34,12 +70,12 @@ export default function JoinNowDialog({ open, onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-
   const validators = {
     name: (v) => (v.trim() ? "" : "Full name is required"),
     phone: (v) => (/^[0-9]{10}$/.test(v) ? "" : "Enter a valid 10-digit phone"),
     email: (v) => (/\S+@\S+\.\S+/.test(v) ? "" : "Enter a valid email"),
     district: (v) => (v.trim() ? "" : "District is required"),
+    qualification: (v) => (v ? "" : "Select your qualification"),
     course: (v) => (v ? "" : "Select a course"),
   };
 
@@ -51,7 +87,6 @@ export default function JoinNowDialog({ open, onClose }) {
     return next;
   };
 
- 
   useEffect(() => {
     setErrors(validateAll(formData));
   }, [formData]);
@@ -61,7 +96,6 @@ export default function JoinNowDialog({ open, onClose }) {
     [errors]
   );
 
-  // controlled inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -71,53 +105,65 @@ export default function JoinNowDialog({ open, onClose }) {
     setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
- 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setTouched({ name: true, phone: true, email: true, district: true, course: true });
-
-  if (!isValid) return;
-
-  setSubmitting(true);
-  try {
-    console.log("[JoinNow] Sending to Formspree…", formData);
-    const res = await fetch("https://formspree.io/f/mqayjpjg", {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        _subject: "New Join Request - IT Saksham Yuva",
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        district: formData.district,
-        course: formData.course,
-        source: "IT Saksham Yuva Join Form",
-      }),
+    e.preventDefault();
+    setTouched({
+      name: true,
+      phone: true,
+      email: true,
+      district: true,
+      qualification: true,
+      course: true,
     });
 
-    console.log("[JoinNow] Response status:", res.status);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Formspree error: ${res.status} ${text}`);
+    if (!isValid) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("https://formspree.io/f/mzzkeyer", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          _subject: "New Join Request - IT Saksham Yuva",
+          ...formData,
+          source: "IT Saksham Yuva Join Form",
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Formspree error: ${res.status} ${text}`);
+      }
+
+      setShowSuccess(true);
+      onClose?.();
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        district: "",
+        qualification: "",
+        course: "",
+      });
+      setTouched({
+        name: false,
+        phone: false,
+        email: false,
+        district: false,
+        qualification: false,
+        course: false,
+      });
+    } catch (err) {
+      console.error("❌ Email send failed:", err);
+      alert("There was a problem submitting your form. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-
-   
-    setShowSuccess(true);
-    onClose?.();
-    setFormData({ name: "", phone: "", email: "", district: "", course: "" });
-    setTouched({ name: false, phone: false, email: false, district: false, course: false });
-  } catch (err) {
-    console.error("❌ Email send failed:", err);
-    alert("There was a problem submitting your form. Please try again.");
-  } finally {
-    setSubmitting(false);
-  }
-};
-
+  };
 
   return (
     <>
@@ -129,7 +175,6 @@ export default function JoinNowDialog({ open, onClose }) {
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <Stack spacing={2}>
-             
               <input type="text" name="_gotcha" style={{ display: "none" }} onChange={() => {}} />
 
               <TextField
@@ -148,7 +193,6 @@ export default function JoinNowDialog({ open, onClose }) {
                 name="phone"
                 value={formData.phone}
                 onChange={(e) => {
-                  
                   const v = e.target.value.replace(/\D/g, "").slice(0, 10);
                   setFormData((p) => ({ ...p, phone: v }));
                 }}
@@ -170,7 +214,9 @@ export default function JoinNowDialog({ open, onClose }) {
                 fullWidth
               />
 
+              {/* Haryana Districts Dropdown */}
               <TextField
+                select
                 label="Your District"
                 name="district"
                 value={formData.district}
@@ -179,8 +225,34 @@ export default function JoinNowDialog({ open, onClose }) {
                 error={touched.district && !!errors.district}
                 helperText={touched.district ? errors.district : " "}
                 fullWidth
-              />
+              >
+                {HARYANA_DISTRICTS.map((d) => (
+                  <MenuItem key={d} value={d}>
+                    {d}
+                  </MenuItem>
+                ))}
+              </TextField>
 
+              {/* Qualification Dropdown */}
+              <TextField
+                select
+                label="Your Qualification"
+                name="qualification"
+                value={formData.qualification}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.qualification && !!errors.qualification}
+                helperText={touched.qualification ? errors.qualification : " "}
+                fullWidth
+              >
+                {QUALIFICATIONS.map((q) => (
+                  <MenuItem key={q} value={q}>
+                    {q}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              {/* Course Dropdown */}
               <TextField
                 select
                 label="Course"
@@ -191,16 +263,6 @@ export default function JoinNowDialog({ open, onClose }) {
                 error={touched.course && !!errors.course}
                 helperText={touched.course ? errors.course : " "}
                 fullWidth
-                SelectProps={{
-                  MenuProps: { PaperProps: { sx: { borderRadius: 1, mt: 0.5 } } },
-                }}
-                sx={{
-                  "& .MuiInputBase-root": {
-                    height: "56px",
-                    display: "flex",
-                    alignItems: "center",
-                  },
-                }}
               >
                 <MenuItem value="Server Administration Microsoft/ Linux">
                   Server Administration Microsoft/ Linux

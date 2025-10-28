@@ -13,6 +13,7 @@ import Disclaimer from "./components/Disclaimer";
 import StickyBottomBar from "./components/StickyBottomBar";
 import Footer from "./components/Footer";
 import JoinButton from "./components/JoinButton";
+import { JoinDialogProvider } from "./context/JoinDialogProvider.jsx";
 
 export default function App() {
   return (
@@ -28,7 +29,7 @@ export default function App() {
       <CoursesGrid />
       <Testimonial />
       <Disclaimer />
-      <Box sx={{ height: 56 }} /> {/* spacer above sticky bar */}
+      <Box sx={{ height: 56 }} />
       <StickyBottomBar />
       <Footer />
 
